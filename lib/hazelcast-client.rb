@@ -1,4 +1,4 @@
-raise "Rubyhaze only runs on JRuby. Sorry!" unless (RUBY_PLATFORM =~ /java/)
+raise "hazelcast-client only runs on JRuby. Sorry!" unless (RUBY_PLATFORM =~ /java/)
 require 'java'
 require 'rubygems'
 require 'hazelcast-jars'
@@ -18,43 +18,49 @@ module Hazelcast
       @username = username || "dev"
       @password = password || "dev-pass"
       @host     = host || "localhost"
-      @client = self.class.connect @username, @password, @host
+      @conn_id  = self.class.connection_id @username, @password, @host
+      self.class.connect @username, @password, @host
+      client
+    end
+
+    def client
+      self.class.connections[@conn_id]
     end
 
     def cluster(name)
-      @client.getCluster name.to_s
+      client.getCluster name.to_s
     end
 
     def list(name)
-      @client.getList name.to_s
+      client.getList name.to_s
     end
 
     def lock(name)
-      @client.getLock name.to_s
+      client.getLock name.to_s
     end
 
     def map(name)
-      @client.getMap name.to_s
+      client.getMap name.to_s
     end
 
     def multi_map(name)
-      @client.getMultiMap name.to_s
+      client.getMultiMap name.to_s
     end
 
     def queue(name)
-      @client.getQueue name.to_s
+      client.getQueue name.to_s
     end
 
     def set(name)
-      @client.getSet name.to_s
+      client.getSet name.to_s
     end
 
     def topic(name)
-      @client.getTopic name.to_s
+      client.getTopic name.to_s
     end
 
     def transaction
-      txn = @client.getTransaction
+      txn = client.getTransaction
       txn.begin
       begin
         yield
@@ -67,12 +73,12 @@ module Hazelcast
     end
 
     def respond_to?(meth)
-      super || @client.respond_to?(meth)
+      super || client.respond_to?(meth)
     end
 
     def method_missing(meth, *args, &blk)
-      if @client.respond_to? meth
-        @client.send meth, *args, &blk
+      if client.respond_to? meth
+        client.send meth, *args, &blk
       else
         super
       end
@@ -82,8 +88,12 @@ module Hazelcast
       @connections ||= {}
     end
 
+    def self.connection_id(username, password, host)
+      "#{username}:#{password}:#{host}"
+    end
+
     def self.connect(username, password, host)
-      conn_id = "#{username}:#{password}:#{host}"
+      conn_id = connection_id(username, password, host)
       if connections.key? conn_id
         connections[conn_id]
       else
