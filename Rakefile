@@ -21,7 +21,8 @@ begin
 
     gem.files             = FileList['bin/*', 'lib/**/*.rb', 'jars/**/*', 'test/**/*.rb', '[A-Z]*'].to_a
     gem.test_files        = Dir["test/test*.rb"]
-    gem.executables       = FileList['bin/*'].to_a
+#    gem.executables       = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
+    gem.executables       = FileList['bin/*'].map { |f| File.basename(f) }
     gem.require_paths     = ["lib"]
 
     gem.add_dependency "hazelcast-jars", "1.9.1"

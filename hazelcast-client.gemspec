@@ -5,16 +5,16 @@
 
 Gem::Specification.new do |s|
   s.name = %q{hazelcast-client}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
   s.platform = %q{jruby}
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Adrian Madrid"]
   s.date = %q{2011-01-08}
-  s.default_executable = %q{bin/hazelcast-client-console}
+  s.default_executable = %q{hazelcast-client-console}
   s.description = %q{Hazelcast::Client is a little gem that wraps the Java Hazelcast Client library into a more comfortable JRuby package.}
   s.email = ["aemadrid@gmail.com"]
-  s.executables = ["bin/hazelcast-client-console"]
+  s.executables = ["hazelcast-client-console"]
   s.extra_rdoc_files = [
     "LICENSE",
     "README.rdoc"
