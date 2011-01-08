@@ -1,0 +1,9 @@
+#!/usr/bin/env jruby
+require File.expand_path(File.dirname(__FILE__) + "/../lib/hazelcast-client.rb")
+
+@client = Hazelcast::Client.new ARGV[0], ARGV[1], ARGV[2]
+
+puts ">> Starting IRB session..."
+require 'irb'
+ARGV.clear
+IRB.start(__FILE__)

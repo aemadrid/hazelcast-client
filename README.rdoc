@@ -1,0 +1,47 @@
+= hazelcast-client
+
+Connecting to a Hazelcast Cluster has never been easier!
+Hazelcast::Client is a little gem that wraps the Java Hazelcast Client library into a more comfortable JRuby package.
+
+Hazelcast is an open source clustering and highly scalable data distribution platform for Java, which is:
+
+* Lightning-fast; thousands of operations/sec.
+* Fail-safe; no losing data after crashes.
+* Dynamically scales as new servers added.
+* Super-easy to use; include a single jar.
+
+== Getting started
+
+Let's get the gem installed and test out the interactive console. Make sure you have a hazelcast cluster running
+in localhost and that is using the default username and password.
+
+  shell> rvm jruby
+  shell> gem install hazelcast-client
+  shell> hazelcast-client-console
+
+  hash = @client.map :test
+  hash[:a] = 1
+  hash[:b] = 2
+
+Let's open another console to check how this distributed hash works:
+
+  shell> hazelcast-client-console
+
+  hash = @client.map :test
+  hash[:a]
+
+  >> 1
+
+== Note on Patches/Pull Requests
+ 
+* Fork the project.
+* Make your feature addition or bug fix.
+* Add tests for it. This is important so I don't break it in a
+  future version unintentionally.
+* Commit, do not mess with rakefile, version, or history.
+  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
+* Send me a pull request. Bonus points for topic branches.
+
+== Copyright
+
+Copyright (c) 2011 Adrian Madrid. See LICENSE for details.
