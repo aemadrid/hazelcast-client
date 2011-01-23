@@ -44,6 +44,36 @@ class Java::ComHazelcastClient::MapClientProxy
     end
   end
 
+  java_import 'com.hazelcast.core.EntryListener'
+
+  def on_entry_added(key = nil, include_value = true, &blk)
+    klass = Class.new
+    klass.send :include, EntryListener
+    klass.send :define_method, :entry_added, &blk
+    key ? add_entry_listener(klass.new, key, include_value) : add_entry_listener(klass.new, include_value)
+  end
+
+  def on_entry_removed(key = nil, include_value = true, &blk)
+    klass = Class.new
+    klass.send :include, EntryListener
+    klass.send :define_method, :entry_removed, &blk
+    key ? add_entry_listener(klass.new, key, include_value) : add_entry_listener(klass.new, include_value)
+  end
+
+  def on_entry_updated(key = nil, include_value = true, &blk)
+    klass = Class.new
+    klass.send :include, EntryListener
+    klass.send :define_method, :entry_updated, &blk
+    key ? add_entry_listener(klass.new, key, include_value) : add_entry_listener(klass.new, include_value)
+  end
+
+  def on_entry_evicted(key = nil, include_value = true, &blk)
+    klass = Class.new
+    klass.send :include, EntryListener
+    klass.send :define_method, :entry_evicted, &blk
+    key ? add_entry_listener(klass.new, key, include_value) : add_entry_listener(klass.new, include_value)
+  end
+
 end
 
 

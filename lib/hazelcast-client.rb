@@ -10,7 +10,6 @@ module Hazelcast
     GEM_ROOT = File.expand_path(File.dirname(__FILE__)) unless defined?(GEM_ROOT)
 
     java_import 'com.hazelcast.client.HazelcastClient'
-#    java_import 'java.util.Map'
 
     attr_reader :username, :password, :host
 
