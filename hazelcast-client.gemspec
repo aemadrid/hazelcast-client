@@ -5,16 +5,15 @@
 
 Gem::Specification.new do |s|
   s.name = %q{hazelcast-client}
-  s.version = "0.0.3"
+  s.version = "0.0.4"
   s.platform = %q{jruby}
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Adrian Madrid"]
-  s.date = %q{2011-01-22}
-  s.default_executable = %q{hazelcast-client-console}
+  s.authors = [%q{Adrian Madrid}]
+  s.date = %q{2012-02-10}
   s.description = %q{Hazelcast::Client is a little gem that wraps the Java Hazelcast Client library into a more comfortable JRuby package.}
-  s.email = ["aemadrid@gmail.com"]
-  s.executables = ["hazelcast-client-console"]
+  s.email = [%q{aemadrid@gmail.com}]
+  s.executables = [%q{hazelcast-client-console}]
   s.extra_rdoc_files = [
     "LICENSE",
     "README.rdoc"
@@ -26,6 +25,7 @@ Gem::Specification.new do |s|
     "VERSION",
     "bin/hazelcast-client-console",
     "lib/hazelcast-client.rb",
+    "lib/hazelcast-client/lock.rb",
     "lib/hazelcast-client/map.rb",
     "lib/hazelcast-client/queue.rb",
     "lib/hazelcast-client/topic.rb",
@@ -35,26 +35,22 @@ Gem::Specification.new do |s|
     "test/test_topic.rb"
   ]
   s.homepage = %q{}
-  s.require_paths = ["lib"]
+  s.require_paths = [%q{lib}]
   s.rubyforge_project = %q{hazelcast-client}
-  s.rubygems_version = %q{1.4.2}
+  s.rubygems_version = %q{1.8.9}
   s.summary = %q{Connecting to a Hazelcast Cluster has never been easier!}
-  s.test_files = [
-    "test/test_map.rb",
-    "test/test_queue.rb",
-    "test/test_topic.rb"
-  ]
+  s.test_files = [%q{test/test_map.rb}, %q{test/test_queue.rb}, %q{test/test_topic.rb}]
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<hazelcast-jars>, ["= 1.9.1"])
+      s.add_runtime_dependency(%q<hazelcast-jars>, ["= 1.9.4.8"])
     else
-      s.add_dependency(%q<hazelcast-jars>, ["= 1.9.1"])
+      s.add_dependency(%q<hazelcast-jars>, ["= 1.9.4.8"])
     end
   else
-    s.add_dependency(%q<hazelcast-jars>, ["= 1.9.1"])
+    s.add_dependency(%q<hazelcast-jars>, ["= 1.9.4.8"])
   end
 end
 
