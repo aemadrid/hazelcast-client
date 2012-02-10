@@ -89,7 +89,7 @@ class TestRubyHazeHash < Test::Unit::TestCase
     k, v = "a1", "b2"
     map[k] = "b1"
     map[k] = v
-    sleep 0.25
+    sleep 0.5
     puts "Notices : #{Notices.all.inspect}"
     assert_equal Notices.size, 2
     assert_equal Notices.first, "updated : #{k} : b1"

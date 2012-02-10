@@ -25,7 +25,7 @@ begin
     gem.executables       = FileList['bin/*'].map { |f| File.basename(f) }
     gem.require_paths     = ["lib"]
 
-    gem.add_dependency "hazelcast-jars", "1.9.1"
+    gem.add_dependency "hazelcast-jars", "1.9.4.8"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

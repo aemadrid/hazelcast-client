@@ -105,7 +105,7 @@ module Hazelcast
 
 end
 
-%w{ map queue topic }.each do |name|
+%w{ lock map queue topic }.each do |name|
   require Hazelcast::Client::GEM_ROOT + '/hazelcast-client/' + name
 end
 
