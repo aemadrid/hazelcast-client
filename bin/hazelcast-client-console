@@ -1,9 +1,10 @@
 #!/usr/bin/env jruby
 require File.expand_path(File.dirname(__FILE__) + "/../lib/hazelcast-client.rb")
 
-@client = Hazelcast::Client.new ARGV[0], ARGV[1], ARGV[2]
+@client = Hazelcast::Client.new ARGV[0] || 'dev', ARGV[1] || 'dev-pass', ARGV[2] || 'localhost'
 
-puts ">> Starting IRB session..."
-require 'irb'
+puts ">> Starting Pry session..."
+require 'pry'
 ARGV.clear
-IRB.start(__FILE__)
+
+Pry.start binding

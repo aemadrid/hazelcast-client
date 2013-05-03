@@ -9,8 +9,6 @@ module Hazelcast
     Hazelcast::Jars.all
     GEM_ROOT = File.expand_path(File.dirname(__FILE__)) unless defined?(GEM_ROOT)
 
-    java_import 'com.hazelcast.client.HazelcastClient'
-
     attr_reader :username, :password, :host
 
     def initialize(username = nil, password = nil, host = nil)
@@ -87,17 +85,21 @@ module Hazelcast
       @connections ||= {}
     end
 
-    def self.connection_id(username, password, host)
-      "#{username}:#{password}:#{host}"
+    def self.connection_id(username, password, *hosts)
+      "#{username}:#{password}:#{hosts.map{ |x| x.to_s }.sort.join('|')}"
     end
 
-    def self.connect(username, password, host)
-      conn_id = connection_id(username, password, host)
+    def self.connect(username, password, *hosts)
+      conn_id = connection_id(username, password, *hosts)
       if connections.key? conn_id
         connections[conn_id]
       else
-        puts ">> Connecting to [#{host}] as [#{username}] with [#{password}]..."
-        connections[conn_id] ||= HazelcastClient.newHazelcastClient username, password, host
+        puts ">> Connecting to [#{hosts.inspect}] as [#{username}] with [#{password}]..."
+        client_config = com.hazelcast.client.ClientConfig.new
+        group_config = com.hazelcast.config.GroupConfig.new username, password
+        hosts.each {|host| client_config.add_address host }
+        client_config.set_group_config group_config
+        connections[conn_id] = com.hazelcast.client.HazelcastClient.newHazelcastClient client_config
       end
     end
 

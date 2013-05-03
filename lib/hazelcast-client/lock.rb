@@ -4,7 +4,7 @@ class Java::ComHazelcastClient::LockClientProxy
   # unlock()
 
   def locking(options = {})
-    raise "Must provide a block" unless block_given?
+    raise 'Must provide a block' unless block_given?
     tries = options[:tries] || 1
     timeout = options[:timeout] || 5
     unit = options[:unit] || :seconds

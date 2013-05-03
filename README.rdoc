@@ -37,7 +37,6 @@ Let's open another console to check how this distributed hash works:
 You can get your own client by providing the group name, password and hosts:
 
   client = Hazelcast::Client.new 'dev', 'dev-pass', 'localhost'
-  
 
 
 == Note on Patches/Pull Requests

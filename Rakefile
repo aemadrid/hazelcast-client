@@ -4,7 +4,7 @@
 require 'rubygems'
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rdoc/task'
 
 begin
   require 'jeweler'
@@ -12,7 +12,7 @@ begin
     gem.name              = "hazelcast-client"
     gem.authors           = ["Adrian Madrid"]
     gem.email             = ["aemadrid@gmail.com"]
-    gem.homepage          = ""
+    gem.homepage          = "https://github.com/aemadrid/hazelcast-client"
     gem.summary           = %q{Connecting to a Hazelcast Cluster has never been easier!}
     gem.description       = %q{Hazelcast::Client is a little gem that wraps the Java Hazelcast Client library into a more comfortable JRuby package.}
     gem.platform          = "jruby"
@@ -25,7 +25,7 @@ begin
     gem.executables       = FileList['bin/*'].map { |f| File.basename(f) }
     gem.require_paths     = ["lib"]
 
-    gem.add_dependency "hazelcast-jars", "1.9.4.8"
+    gem.add_dependency "hazelcast-jars", "2.5.1"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
@@ -37,7 +37,7 @@ Rake::TestTask.new :test do |t|
   t.test_files = FileList["test/**/test_*.rb"]
 end
 
-task :test => :check_dependencies
+task :test
 
 task :default => :test
 
@@ -54,12 +54,12 @@ rescue LoadError
   end
 end
 
-require 'rake/rdoctask'
+require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
   version       = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = "rubyhaze #{version}"
+  rdoc.title    = "hazelcast-client #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
