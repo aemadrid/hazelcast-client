@@ -95,8 +95,8 @@ module Hazelcast
         connections[conn_id]
       else
         puts ">> Connecting to [#{hosts.inspect}] as [#{username}] with [#{password}]..."
-        client_config = com.hazelcast.client.ClientConfig.new
-        group_config = com.hazelcast.config.GroupConfig.new username, password
+        client_config = Java::ComHazelcastClientConfig::ClientConfig.new
+        group_config = Java::ComHazelcastConfig::GroupConfig.new username, password
         hosts.each {|host| client_config.add_address host }
         client_config.set_group_config group_config
         connections[conn_id] = com.hazelcast.client.HazelcastClient.newHazelcastClient client_config

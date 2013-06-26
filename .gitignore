@@ -16,8 +16,10 @@ tmtags
 ## IDEA
 .idea/*
 
-## RVM
+## RVM/RBENV
 .rvmrc
+.rbenv*
+.ruby-version
 
 ## PROJECT::GENERAL
 coverage

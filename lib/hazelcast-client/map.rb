@@ -1,25 +1,19 @@
-class Java::ComHazelcastImpl::DataAwareEntryEvent
+require 'colorize'
 
-  alias_method :name, :getLongName
+class Java::ComHazelcastCore::EntryEvent
+
+  alias_method :name, :getName
   alias_method :source, :getSource
   alias_method :member, :getMember
-  alias_method :source, :getSource
 
   def type
     getEventType.name
   end
 
-  alias_method :key_data, :getKeyData
   alias_method :key, :getKey
-
   alias_method :old_value, :getOldValue
-  alias_method :old_value_data, :getOldValueData
   alias_method :new_value, :getValue
-  alias_method :new_value_data, :getNewValueData
   alias_method :value, :getValue
-  alias_method :value_data, :getNewValueData
-
-  alias_method :key_data, :getKeyData
 
 end
 
@@ -28,28 +22,28 @@ class Hazelcast::Client::DefaultMapListener
   include com.hazelcast.core.EntryListener
 
   def entryAdded(event)
-    puts "#{event.type} : #{event.key} : #{event.value}"
+    #puts "#{event.type} : #{event.key} : #{event.value}"
   end
 
   def entryRemoved(event)
-    puts "#{event.type} : #{event.key} : #{event.value}"
+    #puts "#{event.type} : #{event.key} : #{event.value}"
   end
 
   def entryUpdated(event)
-    puts "#{event.type} : #{event.key} : #{event.value}"
+    #puts "#{event.type} : #{event.key} : #{event.value}"
   end
 
   def entryEvicted(event)
-    puts "#{event.type} : #{event.key} : #{event.value}"
+    #puts "#{event.type} : #{event.key} : #{event.value}"
   end
 
   def method_missing(name, *params)
-    puts "method_missing : #{name} : #{params.inspect}"
+    #puts "method_missing : #{name} : #{params.inspect}"
   end
 
 end
 
-class Java::ComHazelcastClient::MapClientProxy
+class Java::ComHazelcastClientProxy::ClientMapProxy
 
   java_import 'com.hazelcast.query.SqlPredicate'
   java_import 'com.hazelcast.core.EntryListener'
@@ -98,45 +92,54 @@ class Java::ComHazelcastClient::MapClientProxy
 
   java_import 'com.hazelcast.core.EntryListener'
 
+  # ===================================================================
+  # DEPRECATION NOTICE
+  # -------------------------------------------------------------------
+  # Deprecating this functionality in favor of actual listener classes
+
   def on_entry_added(key = nil, include_value = true, &blk)
+    warn '[DEPRECATED] Use an actual class instead of a block'.red
     klass = Class.new
     klass.send :include, EntryListener
     klass.send :define_method, :entryAdded, &blk
     klass.send :define_method, :method_missing do |name, *params|
-      puts "method_missing : (#{name.class.name}) #{name} : #{params.inspect}"
+      #puts "method_missing : (#{name.class.name}) #{name} : #{params.inspect}"
       true
     end
     key ? add_entry_listener(klass.new, key, include_value) : add_entry_listener(klass.new, include_value)
   end
 
   def on_entry_removed(key = nil, include_value = true, &blk)
+    warn '[DEPRECATED] Use an actual class instead of a block'.red
     klass = Class.new
     klass.send :include, EntryListener
     klass.send :define_method, :entryRemoved, &blk
     klass.send :define_method, :method_missing do |name, *params|
-      puts "method_missing : (#{name.class.name}) #{name} : #{params.inspect}"
+      #puts "method_missing : (#{name.class.name}) #{name} : #{params.inspect}"
       true
     end
     key ? add_entry_listener(klass.new(), key, include_value) : add_entry_listener(klass.new, include_value)
   end
 
   def on_entry_updated(key = nil, include_value = true, &blk)
+    warn '[DEPRECATED] Use an actual class instead of a block'.red
     klass = Class.new
     klass.send :include, EntryListener
     klass.send :define_method, :entryUpdated, &blk
     klass.send :define_method, :method_missing do |name, *params|
-      puts "method_missing : (#{name.class.name}) #{name} : #{params.inspect}"
+      #puts "method_missing : (#{name.class.name}) #{name} : #{params.inspect}"
       true
     end
     key ? add_entry_listener(klass.new, key, include_value) : add_entry_listener(klass.new, include_value)
   end
 
   def on_entry_evicted(key = nil, include_value = true, &blk)
+    warn '[DEPRECATED] Use an actual class instead of a block'.red
     klass = Class.new
     klass.send :include, EntryListener
     klass.send :define_method, :entryEvicted, &blk
     klass.send :define_method, :method_missing do |name, *params|
-      puts "method_missing : (#{name.class.name}) #{name} : #{params.inspect}"
+      #puts "method_missing : (#{name.class.name}) #{name} : #{params.inspect}"
       true
     end
     key ? add_entry_listener(klass.new, key, include_value) : add_entry_listener(klass.new, include_value)

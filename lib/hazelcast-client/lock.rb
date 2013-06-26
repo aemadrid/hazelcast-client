@@ -1,27 +1,28 @@
-class Java::ComHazelcastClient::LockClientProxy
-  
+class Java::ComHazelcastClientProxy::ClientLockProxy
+
   # lock()
   # unlock()
 
+  def unlocked?
+    !locked?
+  end
+
   def locking(options = {})
     raise 'Must provide a block' unless block_given?
-    tries = options[:tries] || 1
-    timeout = options[:timeout] || 5
-    unit = options[:unit] || :seconds
-    unit = java.util.concurrent.TimeUnit.const_get unit.to_s.upcase if unit.is_a? Symbol
-    failed = options[:failed] || false
-    result = nil
-    while tries > 0
-      if try_lock(timeout, unit)
-        tries = 0
-        result = yield
+    options = { :tries => 1, :timeout => 5, :unit => :seconds, :failed => false }.update options
+    options[:unit] = java.util.concurrent.TimeUnit.const_get(options[:unit].to_s.upcase) if options[:unit].is_a? Symbol
+
+    while options[:tries] > 0
+      if try_lock(options[:timeout], options[:unit])
+        options[:tries] = 0
+        result          = yield
         unlock
         return result
       else
-        tries -= 1
+        options[:tries] -= 1
       end
     end
-    failed
+    options[:failed]
   end
 
 end

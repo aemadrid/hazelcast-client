@@ -36,17 +36,103 @@ class TestHazelcastMap < Test::Unit::TestCase
     map = CLIENT.map :test_predicates
 
     predicate = map.prepare_predicate 'active = false AND (age = 45 OR name = \'Joe Mategna\')'
-    assert_kind_of SqlPredicate, predicate
+    assert_kind_of Java::ComHazelcastQuery::SqlPredicate, predicate
     assert_equal '(active=false AND (age=45 OR name=Joe Mategna))', predicate.to_s
 
     predicate = map.prepare_predicate :quantity => 3
-    assert_kind_of SqlPredicate, predicate
+    assert_kind_of Java::ComHazelcastQuery::SqlPredicate, predicate
     assert_equal 'quantity=3', predicate.to_s
 
     predicate = map.prepare_predicate :country => 'Unites States of America'
-    assert_kind_of SqlPredicate, predicate
+    assert_kind_of Java::ComHazelcastQuery::SqlPredicate, predicate
     assert_equal 'country=Unites States of America', predicate.to_s
   end
+
+  def test_class_entry_added
+    map = CLIENT.map :test_class_entry_added
+    Notices.clear; map.clear
+    map.add_entry_listener TestEventListener.new('test_class_entry_added'), true
+
+    assert_equal Notices.size, 0
+    k, v   = 'a1', 'b2'
+    map[k] = v
+    sleep 1.5
+    assert_equal Notices.size, 4
+    assert_equal Notices.all, [
+      '[test_class_entry_added] added : a1 : b2',
+      '[test_class_entry_added] removed : a1 : b2',
+      '[test_class_entry_added] updated : a1 : b2',
+      '[test_class_entry_added] evicted : a1 : b2',
+    ]
+  end
+
+  def test_class_entry_removed
+    map = CLIENT.map :test_class_entry_removed
+    Notices.clear; map.clear
+    map.add_entry_listener TestEventListener.new('test_class_entry_removed'), true
+
+    assert_equal Notices.size, 0
+    k, v   = 'a1', 'b2'
+    map[k] = v
+    map.remove k
+    sleep 0.25
+    assert_equal Notices.size, 7
+    assert_equal Notices.all, [
+      '[test_class_entry_removed] added : a1 : b2',
+      '[test_class_entry_removed] removed : a1 : b2',
+      '[test_class_entry_removed] updated : a1 : b2',
+      '[test_class_entry_removed] evicted : a1 : b2',
+      '[test_class_entry_removed] removed : a1 : ',
+      '[test_class_entry_removed] updated : a1 : ',
+      '[test_class_entry_removed] evicted : a1 : ',
+    ]
+  end
+
+  def test_class_entry_updated
+    map = CLIENT.map :test_class_entry_updated
+    Notices.clear; map.clear
+    map.add_entry_listener TestEventListener.new('test_class_entry_updated'), true
+
+    assert_equal Notices.size, 0
+    k, v   = 'a1', 'b2'
+    map[k] = 'b1'
+    map[k] = v
+    sleep 0.5
+    assert_equal Notices.size, 6
+    assert_equal Notices.all, [
+      '[test_class_entry_updated] added : a1 : b1',
+      '[test_class_entry_updated] removed : a1 : b1',
+      '[test_class_entry_updated] updated : a1 : b1',
+      '[test_class_entry_updated] evicted : a1 : b1',
+      '[test_class_entry_updated] updated : a1 : b2',
+      '[test_class_entry_updated] evicted : a1 : b2',
+    ]
+  end
+
+  def test_class_entry_evicted
+    map = CLIENT.map :test_class_entry_evicted
+    Notices.clear; map.clear
+    map.add_entry_listener TestEventListener.new('test_class_entry_evicted'), true
+
+    assert_equal Notices.size, 0
+    k, v   = 'a1', 'b2'
+    map[k] = v
+    map.evict k
+    sleep 0.25
+    assert_equal Notices.size, 5
+    assert_equal Notices.all, [
+      '[test_class_entry_evicted] added : a1 : b2',
+      '[test_class_entry_evicted] removed : a1 : b2',
+      '[test_class_entry_evicted] updated : a1 : b2',
+      '[test_class_entry_evicted] evicted : a1 : b2',
+      '[test_class_entry_evicted] evicted : a1 : ',
+    ]
+  end
+
+  # ===================================================================
+  # DEPRECATION NOTICE
+  # -------------------------------------------------------------------
+  # Deprecating this functionality in favor of actual listener classes
 
   def test_entry_added
     map = CLIENT.map :test_entry_added
@@ -59,8 +145,11 @@ class TestHazelcastMap < Test::Unit::TestCase
     k, v   = 'a1', 'b2'
     map[k] = v
     sleep 1.5
+
     assert_equal Notices.size, 1
-    assert_equal Notices.last, "added : #{k} : #{v}"
+    assert_equal Notices.all, [
+      'added : a1 : b2'
+    ]
   end
 
   def test_entry_removed
@@ -75,8 +164,12 @@ class TestHazelcastMap < Test::Unit::TestCase
     map[k] = v
     map.remove k
     sleep 0.25
-    assert_equal Notices.size, 1
-    assert_equal Notices.last, "removed : #{k} : #{v}"
+
+    assert_equal Notices.size, 2
+    assert_equal Notices.all, [
+      'removed : a1 : b2',
+      'removed : a1 : ',
+    ]
   end
 
   def test_entry_updated
@@ -92,9 +185,13 @@ class TestHazelcastMap < Test::Unit::TestCase
     map[k] = 'b1'
     map[k] = v
     sleep 0.5
-    assert_equal Notices.size, 2
-    assert_equal Notices.first, "updated : #{k} : b1"
-    assert_equal Notices.last, "updated : #{k} : #{v}"
+
+    assert_equal Notices.size, 3
+    assert_equal Notices.all, [
+      'updated : a1 : b0',
+      'updated : a1 : b1',
+      'updated : a1 : b2',
+    ]
   end
 
   def test_entry_evicted
@@ -109,65 +206,12 @@ class TestHazelcastMap < Test::Unit::TestCase
     map[k] = v
     map.evict k
     sleep 0.25
-    assert_equal Notices.size, 1
-    assert_equal Notices.last, "evicted : #{k} : #{v}"
-  end
 
-  def test_class_entry_added
-    map = CLIENT.map :test_class_entry_added
-    Notices.clear; map.clear
-    map.add_entry_listener TestEventListener.new("test_class_entry_added"), true
-
-    assert_equal Notices.size, 0
-    k, v   = 'a1', 'b2'
-    map[k] = v
-    sleep 1.5
-    assert_equal Notices.size, 1
-    assert_equal Notices.last, "[test_class_entry_added] added : #{k} : #{v}"
-  end
-
-  def test_class_entry_removed
-    map = CLIENT.map :test_class_entry_removed
-    Notices.clear; map.clear
-    map.add_entry_listener TestEventListener.new("test_class_entry_removed"), true
-
-    assert_equal Notices.size, 0
-    k, v   = 'a1', 'b2'
-    map[k] = v
-    map.remove k
-    sleep 0.25
     assert_equal Notices.size, 2
-    assert_equal Notices.first, "[test_class_entry_removed] added : #{k} : #{v}"
-    assert_equal Notices.last, "[test_class_entry_removed] removed : #{k} : #{v}"
+    assert_equal Notices.all, [
+      'evicted : a1 : b2',
+      'evicted : a1 : ',
+    ]
   end
 
-  def test_class_entry_updated
-    map = CLIENT.map :test_class_entry_updated
-    Notices.clear; map.clear
-    map.add_entry_listener TestEventListener.new("test_class_entry_updated"), true
-
-    assert_equal Notices.size, 0
-    k, v   = 'a1', 'b2'
-    map[k] = 'b1'
-    map[k] = v
-    sleep 0.5
-    assert_equal Notices.size, 2
-    assert_equal Notices.first, "[test_class_entry_updated] added : #{k} : b1"
-    assert_equal Notices.last, "[test_class_entry_updated] updated : #{k} : b2"
-  end
-
-  def test_class_entry_evicted
-    map = CLIENT.map :test_class_entry_evicted
-    Notices.clear; map.clear
-    map.add_entry_listener TestEventListener.new("test_class_entry_evicted"), true
-
-    assert_equal Notices.size, 0
-    k, v   = 'a1', 'b2'
-    map[k] = v
-    map.evict k
-    sleep 0.25
-    assert_equal Notices.size, 2
-    assert_equal Notices.first, "[test_class_entry_evicted] added : #{k} : #{v}"
-    assert_equal Notices.last, "[test_class_entry_evicted] evicted : #{k} : #{v}"
-  end
 end

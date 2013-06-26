@@ -1,10 +1,21 @@
 #!/usr/bin/env jruby
-require File.expand_path(File.dirname(__FILE__) + "/../lib/hazelcast-client.rb")
+require File.expand_path(File.dirname(__FILE__) + '/../lib/hazelcast-client.rb')
+require 'socket'
 
-@client = Hazelcast::Client.new ARGV[0] || 'dev', ARGV[1] || 'dev-pass', ARGV[2] || 'localhost'
+my_ip   = Socket.ip_address_list.detect do |intf|
+  intf.ipv4? and !intf.ipv4_loopback? and !intf.ipv4_multicast? and !intf.ipv4_private?
+end.ip_address rescue 'localhost'
+
+@client = Hazelcast::Client.new ARGV[0] || 'dev', ARGV[1] || 'dev-pass', ARGV[2] || my_ip
 
 puts ">> Starting Pry session..."
 require 'pry'
 ARGV.clear
 
-Pry.start binding
+command_set = Pry::CommandSet.new do
+  command 'greet' do |name|
+    output.puts "hello #{name}"
+  end
+end
+
+Pry.start binding, :commands => command_set

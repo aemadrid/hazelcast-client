@@ -26,7 +26,4 @@ class TestHazelcastTopic < Test::Unit::TestCase
     assert_equal Notices.last, "[test_class] Hola!"
   end
 
-  def test_class2_listener
-    Notices.clear
-  end
 end

@@ -1,4 +1,4 @@
-class Java::ComHazelcastClient::TopicClientProxy
+class Java::ComHazelcastClientProxy::ClientTopicProxy
 
   java_import 'com.hazelcast.core.MessageListener'
 
@@ -11,7 +11,7 @@ class Java::ComHazelcastClient::TopicClientProxy
 
 end
 
-class Java::ComHazelcastImpl::DataMessage
+class Java::ComHazelcastCore::Message
 
   alias_method :original_to_s, :to_s
 

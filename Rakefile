@@ -9,32 +9,31 @@ require 'rdoc/task'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name              = "hazelcast-client"
-    gem.authors           = ["Adrian Madrid"]
-    gem.email             = ["aemadrid@gmail.com"]
-    gem.homepage          = "https://github.com/aemadrid/hazelcast-client"
+    gem.name              = 'hazelcast-client'
+    gem.authors           = ['Adrian Madrid']
+    gem.email             = %w(aemadrid@gmail.com)
+    gem.homepage          = 'https://github.com/aemadrid/hazelcast-client'
     gem.summary           = %q{Connecting to a Hazelcast Cluster has never been easier!}
     gem.description       = %q{Hazelcast::Client is a little gem that wraps the Java Hazelcast Client library into a more comfortable JRuby package.}
-    gem.platform          = "jruby"
+    gem.platform          = 'jruby'
 
-    gem.rubyforge_project = "hazelcast-client"
+    gem.rubyforge_project = 'hazelcast-client'
 
     gem.files             = FileList['bin/*', 'lib/**/*.rb', 'jars/**/*', 'test/**/*.rb', '[A-Z]*'].to_a
-    gem.test_files        = Dir["test/test*.rb"]
-#    gem.executables       = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
+    gem.test_files        = Dir['test/test*.rb']
     gem.executables       = FileList['bin/*'].map { |f| File.basename(f) }
-    gem.require_paths     = ["lib"]
+    gem.require_paths     = %w(lib)
 
-    gem.add_dependency "hazelcast-jars", "2.5.1"
+    gem.add_dependency 'hazelcast-jars', '3.0.SNAPSHOT'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
+  puts 'Jeweler (or a dependency) not available. Install it with: gem install jeweler'
 end
 
 Rake::TestTask.new :test do |t|
-  t.libs << "lib"
-  t.test_files = FileList["test/**/test_*.rb"]
+  t.libs << 'lib'
+  t.test_files = FileList['test/**/test_*.rb']
 end
 
 task :test
@@ -50,7 +49,7 @@ begin
   end
 rescue LoadError
   task :rcov do
-    abort "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
+    abort 'RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov'
   end
 end
 

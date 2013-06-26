@@ -4,9 +4,16 @@ unless defined?(HELPER_LOADED)
   require 'test/unit'
   require 'forwardable'
   require 'date'
+  require 'socket'
+
+  my_ip   = Socket.ip_address_list.detect do |intf|
+    intf.ipv4? and !intf.ipv4_loopback? and !intf.ipv4_multicast? and !intf.ipv4_private?
+  end.ip_address rescue 'localhost'
 
   # Load the Hazelcast cluster
-  CLIENT = Hazelcast::Client.new 'dev', 'dev-pass', 'localhost'
+  CLIENT = Hazelcast::Client.new ENV['HAZELCAST_USER'] || 'dev',
+                                 ENV['HAZELCAST_PASSWORD'] || 'dev-pass',
+                                 ENV['HAZELCAST_HOST'] || my_ip
 
   # Grab notices
   class Notices
