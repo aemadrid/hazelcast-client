@@ -1,12 +1,21 @@
 class Java::ComHazelcastClientProxy::ClientTopicProxy
 
   java_import 'com.hazelcast.core.MessageListener'
+  
+  class MessageDispatch
+    include MessageListener
+      
+    def initialize(callback)
+      @callback = callback
+    end
+    
+    def onMessage(*args)
+      @callback.call(*args)
+    end
+  end
 
-  def on_message(&blk)
-    klass = Class.new
-    klass.send :include, MessageListener
-    klass.send :define_method, :onMessage, &blk
-    add_message_listener klass.new
+  def on_message(callback = nil, &blk)
+    add_message_listener MessageDispatch.new(callback || blk)
   end
 
 end
