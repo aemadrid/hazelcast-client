@@ -1,5 +1,3 @@
-require 'colorize'
-
 class Java::ComHazelcastCore::EntryEvent
 
   alias_method :name, :getName
